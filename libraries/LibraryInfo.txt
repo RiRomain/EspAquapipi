@@ -1,0 +1,6 @@
+Manualy installed libraries (see in present folder):
+TickerScheduler (https://github.com/Toshik/TickerScheduler)
+LightController (https://github.com/benjaf/LightController)
+
+Library from library manager:
+WiFiManager (https://github.com/tzapu/WiFiManager)
