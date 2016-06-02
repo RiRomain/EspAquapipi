@@ -2,7 +2,7 @@
 #include "libraries/LightController/ChannelManager.h"
 
 #include <Wire.h>
-#include <RtcDS3231.h>
+#include <RTClib.h>
 
 #include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library
 
@@ -20,33 +20,25 @@ void setupWifiConfigAP() {
   wifiManager.setDebugOutput(true);
 }
 
-RtcDS3231 Rtc;
+RTC_DS3231 Rtc;
 void setupRTC() {
-  Rtc.Begin(); 
+  Wire.begin();
+  Rtc.begin(); 
 
-  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-  if (!Rtc.IsDateTimeValid()) 
+  DateTime compiled = DateTime(__DATE__, __TIME__);
+  if (Rtc.lostPower()) 
   {
     //set the compilation time as actual time
     //TODO add a call to a NTP server to synch the time from internet instead of compiled time
-    Serial.println("RTC lost confidence in the DateTime!");
-    Rtc.SetDateTime(compiled);
+    Serial.println("RTC lost power and lost confidence in the DateTime!");
+    Rtc.adjust(compiled);
   }
-  if (!Rtc.GetIsRunning())
-  {
-    Serial.println("RTC was not actively running, starting now");
-    Rtc.SetIsRunning(true);
-  }
-  RtcDateTime now = Rtc.GetDateTime();
-  if (now < compiled) 
+  DateTime now = Rtc.now();
+  if (now.secondstime() < compiled.secondstime()) 
   {
     Serial.println("RTC is older than compile time!  (Updating DateTime)");
-    Rtc.SetDateTime(compiled);
+    Rtc.adjust(compiled);
   }
-  // never assume the Rtc was last configured by you, so
-  // just clear them to your needed state
-  Rtc.Enable32kHzPin(false);
-  Rtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone); 
 }
 
 const int MaxChannels = 2;   // Max number of channels, change if more or less are required
@@ -85,10 +77,10 @@ long Seconds(int hours, int minutes, int seconds) {
   return ((long)hours * 60 * 60) + (minutes * 60) + seconds ;
 }
 
-RtcDateTime CurrentTime;
+DateTime CurrentTime;
 void refreshLedValue() {
-  CurrentTime = Rtc.GetDateTime();
-  long now = Seconds(CurrentTime.Hour(), CurrentTime.Minute(), CurrentTime.Second());  // Convert current time to seconds since midnight
+  CurrentTime = Rtc.now();
+  long now = Seconds(CurrentTime.hour(), CurrentTime.minute(), CurrentTime.second());  // Convert current time to seconds since midnight
   //function execute on time every LED_VALUE_REFRESH_RATE thanks to the scheduler
   for(int channel = 0; channel < MaxChannels; channel++)        // For each Channel
   {

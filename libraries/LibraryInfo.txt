@@ -4,3 +4,4 @@ LightController (https://github.com/benjaf/LightController)
 
 Library from library manager:
 WiFiManager (https://github.com/tzapu/WiFiManager)
+RTClib by Adafruit (https://github.com/adafruit/RTClib)
