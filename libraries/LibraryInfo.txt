@@ -1,6 +1,7 @@
 Manualy installed libraries (see in present folder):
 TickerScheduler (https://github.com/Toshik/TickerScheduler)
 LightController (https://github.com/benjaf/LightController)
+Adafruit_SSD1306 (https://github.com/mcauser/Adafruit_SSD1306/tree/esp8266-64x48) Branch esp8266-64x48
 
 Library from library manager:
 WiFiManager (https://github.com/tzapu/WiFiManager)
